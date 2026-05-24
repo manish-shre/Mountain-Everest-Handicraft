@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-serif text-navy antialiased bg-cream;
+  }
+}
+
+.pattern-nepali {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='none' stroke='%23C9A227' stroke-opacity='0.06' stroke-width='0.5'/%3E%3C/svg%3E");
+}
+
+.pattern-dots {
+  background-image: radial-gradient(circle at 1px 1px, rgba(201, 162, 39, 0.15) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Admin panel — clean, readable, Times New Roman */
+@layer components {
+  .admin-root {
+    font-family: "Times New Roman", Times, serif;
+    color: #111827;
+    background-color: #f3f4f6;
+  }
+
+  .admin-label {
+    @apply block text-base font-semibold text-gray-900 mb-2;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .admin-input {
+    @apply w-full px-4 py-3 text-base leading-relaxed text-gray-900 bg-white border border-gray-400 rounded-md shadow-sm;
+    @apply placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-navy focus:border-navy;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .admin-btn {
+    @apply inline-flex items-center justify-center px-4 py-2.5 text-base font-semibold rounded-md transition-colors;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .admin-btn-primary {
+    @apply admin-btn bg-navy text-white hover:bg-navy-light disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .admin-btn-secondary {
+    @apply admin-btn bg-white text-gray-900 border border-gray-400 hover:bg-gray-50;
+  }
+
+  .admin-btn-accent {
+    @apply admin-btn bg-gold text-navy hover:bg-gold-dark disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .admin-card {
+    @apply bg-white rounded-lg border border-gray-300 shadow-sm;
+  }
+
+  .admin-item-card {
+    @apply bg-gray-50 rounded-lg border border-gray-300 p-5 space-y-4;
+  }
+
+  .admin-item-title {
+    @apply text-lg font-bold text-gray-900 pb-2 border-b border-gray-300;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .admin-heading {
+    @apply text-2xl font-bold text-gray-900;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .admin-subheading {
+    @apply text-base text-gray-700 mt-1 mb-6 leading-relaxed;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .admin-nav-btn {
+    @apply w-full text-left px-4 py-3 text-base rounded-md transition-colors;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .admin-nav-btn-active {
+    @apply bg-navy text-white font-semibold;
+  }
+
+  .admin-nav-btn-inactive {
+    @apply text-gray-900 hover:bg-gray-200 font-medium;
+  }
+}

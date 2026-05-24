@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="heroBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1B2838"/>
+      <stop offset="50%" style="stop-color:#2C3E50"/>
+      <stop offset="100%" style="stop-color:#1B2838"/>
+    </linearGradient>
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#C9A227;stop-opacity:0.3"/>
+      <stop offset="50%" style="stop-color:#C9A227;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#C9A227;stop-opacity:0.3"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#heroBg)"/>
+  <rect width="1920" height="1080" fill="url(#goldAccent)"/>
+  <g fill="none" stroke="#C9A227" stroke-width="2" stroke-opacity="0.4">
+    <circle cx="960" cy="480" r="120"/>
+    <path d="M960 380v-60 M960 580v60 M860 480h-60 M1060 480h60 M890 390l-42-42 M1030 570l42 42 M1030 390l42-42 M890 570l-42 42"/>
+  </g>
+  <text x="960" y="680" font-family="Georgia, serif" font-size="28" fill="rgba(255,255,255,0.9)" text-anchor="middle">Handcrafted Gold &amp; Silver  Kathmandu, Nepal</text>
+</svg>

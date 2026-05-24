@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+  <rect width="500" height="500" fill="#EDE9E0"/>
+  <circle cx="250" cy="230" r="80" fill="none" stroke="#A8A9AD" stroke-width="2.5" stroke-opacity="0.6"/>
+  <circle cx="250" cy="230" r="50" fill="none" stroke="#C9A227" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="250" y="420" font-family="Georgia, serif" font-size="18" fill="#1B2838" fill-opacity="0.6" text-anchor="middle">Singing Bowl</text>
+</svg>

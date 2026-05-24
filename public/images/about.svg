@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="aboutBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EDE9E0"/>
+      <stop offset="100%" style="stop-color:#E8E4DA"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#aboutBg)"/>
+  <rect x="200" y="150" width="400" height="300" rx="8" fill="none" stroke="#C9A227" stroke-width="2" stroke-opacity="0.5"/>
+  <g fill="#C9A227" fill-opacity="0.3">
+    <circle cx="400" cy="280" r="50"/>
+    <path d="M400 240v-20 M400 320v20 M360 280h-20 M440 280h20" stroke="#C9A227" stroke-width="1.5" stroke-opacity="0.6" fill="none"/>
+  </g>
+  <text x="400" y="520" font-family="Georgia, serif" font-size="18" fill="#1B2838" fill-opacity="0.6" text-anchor="middle">Artisan at work  Nepal</text>
+</svg>
