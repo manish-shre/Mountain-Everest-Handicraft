@@ -16,7 +16,7 @@ export default function Categories() {
         />
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {section.items?.map((cat) => (
-            <CategoryCard key={cat.id || cat.title} {...cat} fallbackImage={cat.fallbackImage} />
+            <CategoryCard key={cat.id || cat.title} {...cat} />
           ))}
         </div>
       </div>

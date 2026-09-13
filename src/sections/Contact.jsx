@@ -1,19 +1,111 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import SectionHeader from '../components/SectionHeader'
 import CTAButton from '../components/CTAButton'
 import { useContent } from '../context/ContentContext'
+import PhoneList from '../components/PhoneList'
+import SocialIcon from '../components/SocialIcon'
+import { onContactPrefill } from '../lib/contactPrefill'
+import { sendContactMessage } from '../lib/messagesService'
+import { isShortMapsLink, mapEmbedSrc, mapOpenHref } from '../lib/maps'
+import { socialHref } from '../lib/social'
+import { safeHref } from '../lib/url'
+import { isSupabaseConfigured } from '../lib/supabase'
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const EMPTY_FORM = { name: '', email: '', phone: '', message: '', website: '' }
+// Humans need a few seconds to fill in the form; instant submissions are bots.
+const MIN_FILL_MS = 2500
+const inputClasses =
+  'w-full px-4 py-3 rounded-xl border border-cream-dark/50 bg-cream/30 font-sans text-navy placeholder-navy/50 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent'
 
 export default function Contact() {
   const { content } = useContent()
   const contact = content.contact
-  const [formState, setFormState] = useState({ name: '', email: '', message: '' })
+  const [formState, setFormState] = useState(EMPTY_FORM)
+  const [status, setStatus] = useState(null)
+  const [sending, setSending] = useState(false)
+  const mountedAt = useRef(Date.now())
+
+  const hasPhones = contact.phones?.some((p) => p?.number?.trim())
+  const whatsappHref = socialHref('whatsapp', content.social?.whatsapp)
+  const viberHref = socialHref('viber', content.social?.viber)
+  const recipient = EMAIL_RE.test(contact.email?.trim() || '') ? contact.email.trim() : ''
+  // Embedded map: a location the admin typed, or one read from a full Google Maps URL.
+  const mapSrc = mapEmbedSrc(contact.mapLocation) || (isShortMapsLink(contact.mapLink) ? null : mapEmbedSrc(contact.mapLink))
+  const directionsHref = mapOpenHref(safeHref(contact.mapLink), contact.mapLocation)
+
+  // Product cards can prefill the message ("Request Price" → contact form).
+  useEffect(
+    () => onContactPrefill((message) => {
+      setFormState((prev) => ({ ...prev, message }))
+      setStatus(null)
+    }),
+    [],
+  )
 
   const handleChange = (e) => {
     setFormState((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    if (status) setStatus(null)
   }
 
-  const handleSubmit = (e) => {
+  const openEmailApp = (name, email, phone, message) => {
+    const subject = `Website enquiry from ${name}`
+    const body = `${message}\n\n—\nName: ${name}\nEmail: ${email}${phone ? `\nPhone: ${phone}` : ''}`
+    window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    if (sending) return
+    const name = formState.name.trim()
+    const email = formState.email.trim()
+    const phone = formState.phone.trim()
+    const message = formState.message.trim()
+
+    if (!name || !message || !EMAIL_RE.test(email)) {
+      setStatus({ type: 'error', text: 'Please enter your name, a valid email address, and a message.' })
+      return
+    }
+    if (name.length > 100 || phone.length > 30 || message.length > 5000) {
+      setStatus({ type: 'error', text: 'Your message is too long. Please shorten it (max 5000 characters).' })
+      return
+    }
+
+    const successText = 'Thank you! Your message has been sent. We will get back to you soon.'
+
+    // Bot traps: hidden "website" field filled in, or submitted impossibly fast. Pretend it worked.
+    if (formState.website || Date.now() - mountedAt.current < MIN_FILL_MS) {
+      setFormState(EMPTY_FORM)
+      setStatus({ type: 'success', text: successText })
+      return
+    }
+
+    // Without a database connection, fall back to the visitor's email app.
+    if (!isSupabaseConfigured) {
+      if (!recipient) {
+        setStatus({ type: 'error', text: 'Messages cannot be sent right now. Please contact us by phone or WhatsApp.' })
+        return
+      }
+      openEmailApp(name, email, phone, message)
+      setStatus({ type: 'success', text: `Your email app should open with your message ready to send. If it doesn't, email us directly at ${recipient}.` })
+      return
+    }
+
+    setSending(true)
+    setStatus(null)
+    try {
+      await sendContactMessage({ name, email, phone, message })
+      setFormState(EMPTY_FORM)
+      setStatus({ type: 'success', text: successText })
+    } catch (err) {
+      console.warn('Contact message failed:', err?.message || err)
+      const rateLimited = /too many messages/i.test(err?.message || '')
+      const reason = rateLimited ? err.message : 'Sorry, your message could not be sent. Please try again.'
+      const alternative = recipient ? `You can also email us at ${recipient}.` : 'You can also contact us by phone.'
+      setStatus({ type: 'error', text: `${reason} ${alternative}` })
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -27,93 +119,176 @@ export default function Contact() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
           <div>
             <div className="space-y-6 mb-8">
-              <div>
-                <p className="font-sans text-sm uppercase tracking-wider text-gold mb-1">Phone</p>
-                <a href={`tel:${contact.phone}`} className="font-serif text-lg text-navy hover:text-gold transition-colors">
-                  {contact.phone}
-                </a>
-              </div>
-              <div>
-                <p className="font-sans text-sm uppercase tracking-wider text-gold mb-1">Email</p>
-                <a href={`mailto:${contact.email}`} className="font-serif text-lg text-navy hover:text-gold transition-colors">
-                  {contact.email}
-                </a>
-              </div>
-              <div>
-                <p className="font-sans text-sm uppercase tracking-wider text-gold mb-1">Location</p>
-                <p className="font-sans text-navy/90">{contact.address}</p>
-              </div>
+              {hasPhones && (
+                <div>
+                  <p className="font-sans text-sm uppercase tracking-wider text-gold-deep mb-1">Phone</p>
+                  <PhoneList
+                    phones={contact.phones}
+                    className="space-y-1 font-serif text-lg text-navy"
+                    labelClassName="font-sans text-base text-navy/70"
+                    itemClassName="hover:text-gold-deep transition-colors"
+                  />
+                </div>
+              )}
+              {recipient && (
+                <div>
+                  <p className="font-sans text-sm uppercase tracking-wider text-gold-deep mb-1">Email</p>
+                  <a href={`mailto:${recipient}`} className="font-serif text-lg text-navy hover:text-gold-deep transition-colors break-all">
+                    {recipient}
+                  </a>
+                </div>
+              )}
+              {contact.address && (
+                <div>
+                  <p className="font-sans text-sm uppercase tracking-wider text-gold-deep mb-1">Location</p>
+                  <p className="font-sans text-navy/90">{contact.address}</p>
+                </div>
+              )}
             </div>
-            <CTAButton
-              href={contact.whatsapp}
-              variant="primary"
-              className="inline-flex items-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-              </svg>
-              Contact on WhatsApp
-            </CTAButton>
+            <div className="flex flex-wrap gap-3">
+              <CTAButton href={whatsappHref ?? null} variant="primary" className="inline-flex items-center gap-2">
+                <SocialIcon platform="whatsapp" />
+                {contact.whatsappLabel}
+              </CTAButton>
+              <CTAButton href={viberHref ?? null} variant="secondary" className="inline-flex items-center gap-2">
+                <SocialIcon platform="viber" />
+                {contact.viberLabel}
+              </CTAButton>
+            </div>
           </div>
           <div className="lg:pl-8">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               <div>
-                <label htmlFor="name" className="block font-sans text-sm font-medium text-navy mb-1">
+                <label htmlFor="contact-name" className="block font-sans text-sm font-medium text-navy mb-1">
                   Name
                 </label>
                 <input
                   type="text"
-                  id="name"
+                  id="contact-name"
                   name="name"
                   value={formState.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-cream-dark/50 bg-cream/30 font-sans text-navy placeholder-navy/50 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
+                  autoComplete="name"
+                  maxLength={100}
+                  className={inputClasses}
                   placeholder="Your name"
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block font-sans text-sm font-medium text-navy mb-1">
+                <label htmlFor="contact-email" className="block font-sans text-sm font-medium text-navy mb-1">
                   Email
                 </label>
                 <input
                   type="email"
-                  id="email"
+                  id="contact-email"
                   name="email"
                   value={formState.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-cream-dark/50 bg-cream/30 font-sans text-navy placeholder-navy/50 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
+                  autoComplete="email"
+                  maxLength={254}
+                  className={inputClasses}
                   placeholder="your@email.com"
                 />
               </div>
               <div>
-                <label htmlFor="message" className="block font-sans text-sm font-medium text-navy mb-1">
+                <label htmlFor="contact-phone" className="block font-sans text-sm font-medium text-navy mb-1">
+                  Phone <span className="text-navy/70 font-normal">(optional)</span>
+                </label>
+                <input
+                  type="tel"
+                  id="contact-phone"
+                  name="phone"
+                  value={formState.phone}
+                  onChange={handleChange}
+                  autoComplete="tel"
+                  maxLength={30}
+                  className={inputClasses}
+                  placeholder="+977 98XXXXXXXX"
+                />
+              </div>
+              <div>
+                <label htmlFor="contact-message" className="block font-sans text-sm font-medium text-navy mb-1">
                   Message
                 </label>
                 <textarea
-                  id="message"
+                  id="contact-message"
                   name="message"
                   value={formState.message}
                   onChange={handleChange}
                   required
                   rows={4}
-                  className="w-full px-4 py-3 rounded-xl border border-cream-dark/50 bg-cream/30 font-sans text-navy placeholder-navy/50 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent resize-none"
+                  maxLength={5000}
+                  className={`${inputClasses} resize-none`}
                   placeholder="Your message or custom order details..."
+                />
+              </div>
+              {/* Honeypot: hidden from people, but bots tend to fill every field. */}
+              <div className="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
+                <label htmlFor="contact-website">Website</label>
+                <input
+                  type="text"
+                  id="contact-website"
+                  name="website"
+                  value={formState.website}
+                  onChange={handleChange}
+                  tabIndex={-1}
+                  autoComplete="off"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-navy text-white font-sans font-medium hover:bg-navy-light transition-colors"
+                disabled={sending}
+                className="w-full py-3 rounded-xl bg-navy text-white font-sans font-medium hover:bg-navy-light transition-colors disabled:opacity-60 disabled:cursor-wait"
               >
-                Send Message
+                {sending ? 'Sending…' : 'Send Message'}
               </button>
+              <div aria-live="polite">
+                {status && (
+                  <p
+                    className={`font-sans text-sm ${status.type === 'error' ? 'text-red-700' : 'text-green-800'}`}
+                    role={status.type === 'error' ? 'alert' : 'status'}
+                  >
+                    {status.text}
+                  </p>
+                )}
+              </div>
             </form>
           </div>
         </div>
-        <div className="mt-12 rounded-2xl overflow-hidden bg-cream-dark/30 aspect-video max-h-[320px] flex items-center justify-center border border-cream-dark/50">
-          <p className="font-sans text-navy/60">{contact.mapPlaceholder}</p>
-        </div>
+        {mapSrc && (
+          <div className="mt-12 rounded-2xl overflow-hidden border border-cream-dark/50 shadow-soft bg-white">
+            <iframe
+              title={`Map: ${contact.mapTitle || 'Our location'}${contact.address ? ` — ${contact.address}` : ''}`}
+              src={mapSrc}
+              className="block w-full h-72 md:h-[420px] border-0 bg-cream-dark/30"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-5 py-4 md:px-6">
+              <div>
+                {contact.mapTitle && <p className="font-serif text-lg font-semibold text-navy">{contact.mapTitle}</p>}
+                {contact.address && <p className="font-sans text-sm text-navy/70">{contact.address}</p>}
+              </div>
+              {directionsHref && (
+                <a
+                  href={directionsHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-navy text-white font-sans text-sm font-medium hover:bg-navy-light transition-colors shrink-0"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  {contact.directionsLabel || 'Get Directions'}
+                </a>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   )

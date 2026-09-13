@@ -18,7 +18,7 @@ I cannot log into your dashboard for you (only you have access). Follow these 4 
 
 1. Open [Project API settings](https://supabase.com/dashboard/project/ewwzzsbaicqbaadxfgkx/settings/api)
 2. Under **Project API keys**, copy the **`anon` `public`** key (not the `service_role` key)
-3. Open `.env` in this project and replace `PASTE_YOUR_ANON_KEY_HERE` with that key
+3. Copy `.env.example` to `.env` in this project and replace `sb_publishable_your_key_here` with that key
 4. Save the file
 
 The URL is already set:

@@ -18,7 +18,7 @@ export default function CustomOrders() {
         <p className="font-sans text-lg text-white/85 max-w-2xl mx-auto mb-10 leading-relaxed">
           {section.subtitle}
         </p>
-        <CTAButton href="#contact" variant="primary" className="min-w-[200px]">
+        <CTAButton href="/contact" variant="primary" className="min-w-[200px]">
           {section.cta}
         </CTAButton>
       </div>

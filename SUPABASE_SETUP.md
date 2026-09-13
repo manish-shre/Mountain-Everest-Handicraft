@@ -18,6 +18,14 @@ This creates:
 - `admin_users` — allowlist of who can edit content
 - `media` storage bucket — for uploaded images
 
+Then open another new query, paste `supabase/contact_messages.sql` and click **Run**. This creates:
+
+- `contact_messages` — messages sent from the website contact form. Visitors can only send; only admins can read, mark as read, or delete them (shown under **Messages** in `/admin`). Includes basic spam limits (3 messages per email per 10 minutes, 60 per hour in total).
+
+Then open another new query, paste `supabase/reviews.sql` and click **Run**. This creates:
+
+- `reviews` — reviews customers submit from the Testimonials section. New reviews are hidden until an admin approves them under **Reviews** in `/admin`; visitors can only read approved reviews. No email or phone is collected. Spam limits: 2 reviews per name per 10 minutes, 20 per hour in total. The Testimonials section stays hidden until this table exists.
+
 ## 3. Configure environment variables
 
 1. Copy `.env.example` to `.env` in the project root.
@@ -44,6 +52,10 @@ values ('PASTE_USER_UUID_HERE', 'admin@yourdomain.com');
 2. Sign in with the admin email and password.
 3. Edit sections in the sidebar and click **Save all changes**.
 4. Open the public site (`/`) to see updates.
+
+Phone numbers (3 or more) and social media links (Facebook, Instagram, TikTok, YouTube, WhatsApp, Viber, Messenger, Telegram, X, LinkedIn, Pinterest, Threads, Snapchat, Google Maps) are edited under **Phones & Social**. Empty fields are hidden on the website. No database migration is needed — content is stored as JSON, and content saved by older versions is upgraded automatically when loaded.
+
+> A local `.env` that points at the production Supabase project edits the **live** website when you save in `/admin`.
 
 ## Image uploads
 

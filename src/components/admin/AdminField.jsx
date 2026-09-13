@@ -1,25 +1,33 @@
-export default function AdminField({ label, value, onChange, type = 'text', rows, placeholder, className = '', hint }) {
+import { useId } from 'react'
+
+export default function AdminField({ label, value, onChange, type = 'text', rows, placeholder, className = '', hint, maxLength, ariaLabel }) {
+  const id = useId()
+  const hintId = hint ? `${id}-hint` : undefined
+  const length = String(value ?? '').length
+  const common = {
+    id,
+    value: value ?? '',
+    onChange: (e) => onChange(e.target.value),
+    placeholder,
+    maxLength,
+    'aria-describedby': hintId,
+    'aria-label': label ? undefined : ariaLabel,
+  }
+
   return (
-    <label className={`block ${className}`}>
-      {label && <span className="admin-label">{label}</span>}
-      {hint && <p className="text-sm text-gray-600 mb-2 -mt-1">{hint}</p>}
+    <div className={className}>
+      {label && <label htmlFor={id} className="admin-label">{label}</label>}
+      {hint && <p id={hintId} className="admin-help">{hint}</p>}
       {type === 'textarea' ? (
-        <textarea
-          value={value ?? ''}
-          onChange={(e) => onChange(e.target.value)}
-          rows={rows ?? 4}
-          placeholder={placeholder}
-          className="admin-input resize-y min-h-[6rem]"
-        />
+        <textarea {...common} rows={rows ?? 4} className="admin-input resize-y min-h-[5.5rem]" />
       ) : (
-        <input
-          type={type}
-          value={value ?? ''}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="admin-input"
-        />
+        <input {...common} type={type} className="admin-input" />
       )}
-    </label>
+      {maxLength && (
+        <span className={`block mt-1 text-right text-xs ${length >= maxLength ? 'text-red-600 font-semibold' : 'text-slate-400'}`}>
+          {length}/{maxLength}
+        </span>
+      )}
+    </div>
   )
 }
