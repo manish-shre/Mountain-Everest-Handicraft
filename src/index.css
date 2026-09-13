@@ -20,75 +20,66 @@
   background-size: 24px 24px;
 }
 
-/* Admin panel — clean, readable, Times New Roman */
+/* Admin panel — clean, friendly UI for non-technical editors */
 @layer components {
   .admin-root {
-    font-family: "Times New Roman", Times, serif;
-    color: #111827;
-    background-color: #f3f4f6;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", "Helvetica Neue", Arial, sans-serif;
+    color: #0f172a;
+    background-color: #f5f6f8;
+    -webkit-font-smoothing: antialiased;
   }
 
   .admin-label {
-    @apply block text-base font-semibold text-gray-900 mb-2;
-    font-family: "Times New Roman", Times, serif;
+    @apply block text-sm font-semibold text-slate-800 mb-1.5;
+  }
+
+  .admin-help {
+    @apply text-sm text-slate-500 mb-2 -mt-0.5 leading-relaxed;
   }
 
   .admin-input {
-    @apply w-full px-4 py-3 text-base leading-relaxed text-gray-900 bg-white border border-gray-400 rounded-md shadow-sm;
-    @apply placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-navy focus:border-navy;
-    font-family: "Times New Roman", Times, serif;
+    @apply w-full px-3.5 py-2.5 text-[15px] leading-relaxed text-slate-900 bg-white border border-slate-300 rounded-lg shadow-sm transition;
+    @apply placeholder:text-slate-400 focus:outline-none focus:border-navy focus:ring-4 focus:ring-navy/10;
   }
 
   .admin-btn {
-    @apply inline-flex items-center justify-center px-4 py-2.5 text-base font-semibold rounded-md transition-colors;
-    font-family: "Times New Roman", Times, serif;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors;
+    @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-navy/20 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .admin-btn-primary {
-    @apply admin-btn bg-navy text-white hover:bg-navy-light disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply admin-btn bg-navy text-white hover:bg-navy-light shadow-sm;
   }
 
   .admin-btn-secondary {
-    @apply admin-btn bg-white text-gray-900 border border-gray-400 hover:bg-gray-50;
+    @apply admin-btn bg-white text-slate-700 border border-slate-300 hover:bg-slate-50;
   }
 
   .admin-btn-accent {
-    @apply admin-btn bg-gold text-navy hover:bg-gold-dark disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply admin-btn bg-gold text-navy hover:bg-gold-dark shadow-sm;
+  }
+
+  .admin-btn-danger {
+    @apply admin-btn bg-white text-red-600 border border-red-200 hover:bg-red-50;
   }
 
   .admin-card {
-    @apply bg-white rounded-lg border border-gray-300 shadow-sm;
+    @apply bg-white rounded-2xl border border-slate-200 shadow-sm;
   }
 
   .admin-item-card {
-    @apply bg-gray-50 rounded-lg border border-gray-300 p-5 space-y-4;
+    @apply bg-white rounded-xl border border-slate-200 p-5 space-y-4;
   }
 
   .admin-item-title {
-    @apply text-lg font-bold text-gray-900 pb-2 border-b border-gray-300;
-    font-family: "Times New Roman", Times, serif;
+    @apply text-base font-semibold text-slate-900 pb-2 border-b border-slate-100;
   }
 
   .admin-heading {
-    @apply text-2xl font-bold text-gray-900;
-    font-family: "Times New Roman", Times, serif;
+    @apply text-2xl font-bold text-slate-900 tracking-tight;
   }
 
   .admin-subheading {
-    @apply text-base text-gray-700 mt-1 mb-6 leading-relaxed;
-    font-family: "Times New Roman", Times, serif;
-  }
-
-  .admin-nav-btn {
-    @apply w-full text-left px-4 py-3 text-base rounded-md transition-colors;
-    font-family: "Times New Roman", Times, serif;
-  }
-
-  .admin-nav-btn-active {
-    @apply bg-navy text-white font-semibold;
-  }
-
-  .admin-nav-btn-inactive {
-    @apply text-gray-900 hover:bg-gray-200 font-medium;
+    @apply text-base text-slate-500 mt-1 mb-6 leading-relaxed;
   }
 }

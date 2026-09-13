@@ -1,27 +1,40 @@
+import { emptySocial } from '../lib/social'
+
 const U = (id, w = 1200) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&q=80`
+const MEDIA = (file) =>
+  `https://ewwzzsbaicqbaadxfgkx.supabase.co/storage/v1/object/public/media/${file}`
 
-/** Default site content — used when Supabase is unavailable or not configured. */
+/**
+ * Default site content — used when Supabase is unavailable or not configured.
+ * Mirrors the live content from mteveresthandicraft.com (snapshot 2026-05-30).
+ * The live site itself is edited from /admin and stored in Supabase.
+ */
 export const defaultContent = {
   logo: '/images/logo.png',
   hero: {
-    image: U('1610375461246-83df859d849d', 1920),
-    imageAlt: 'Handcrafted gold and silver artisan work',
-    overline: 'Handmade in Kathmandu, Nepal',
-    title: 'Handcrafted Gold & Silver Art from the Heart of Nepal',
-    subtitle:
-      'Each piece is forged by skilled artisans using centuries-old techniques. Discover jewelry, religious statues, and cultural metal crafts that carry the soul of the Himalayas.',
-    ctaPrimary: 'Shop Collection',
-    ctaSecondary: 'Custom Order',
+    autoplaySeconds: 6,
+    slides: [
+      {
+        id: 'slide-1',
+        image: MEDIA('1779730463290-xohvyl62zps.jpg'),
+        imageAlt: 'Handcrafted gold and silver artisan work',
+        overline: 'Living History Preserved in Pure Gold & Silver',
+        title: 'Mount Everest Handicraft',
+        subtitle:
+          'Our gold and silver jewelry is handcrafted by master artisans in Nepal, keeping ancient traditions alive. Every unique piece brings the rich history of the Kathmandu Valley directly to you.',
+        ctaPrimary: 'Shop Collection',
+        ctaSecondary: 'Custom Order',
+      },
+    ],
   },
   about: {
-    image: U('1558618666-fcd25c85cd64', 800),
+    image: MEDIA('1779606532088-xlgn18yz8j8.jpeg'),
     imageAlt: 'Nepali artisan at work',
-    overline: 'About the Craft',
-    title: 'Centuries of Tradition, One Piece at a Time',
+    overline: 'Meet The Founder',
+    title: 'Karna Bahadur Bishwakarma',
     paragraphs: [
-      'In the heart of Kathmandu, generations of artisans have perfected the art of metalwork — transforming gold and silver into jewelry, religious statues, and cultural treasures. Our craftsmen use techniques passed down through families, combining reverence for tradition with an eye for detail.',
-      'Every piece from Mount Everest Gold Silver Handicraft is made by hand: from design and carving to casting and polishing. We work with local families and cooperatives, ensuring fair wages and preserving Nepal\'s rich craft heritage for the world to cherish.',
+      'Founded by Karna Bahadur Bishwakarma, our brand is built on a lifetime of dedication to traditional handicraft work. Carrying forward generations of Himalayan artistry, he personally ensures that every piece of gold and silver jewelry honors the sacred traditions and raw beauty of Nepal.',
     ],
     tagline: 'Handmade in Nepal — with pride and care.',
   },
@@ -56,7 +69,7 @@ export const defaultContent = {
         title: 'Religious Statues',
         description:
           'Sacred Buddha, Hindu deities, and ritual objects cast and finished by hand for temples, altars, and collectors.',
-        image: U('1548013146-72479768bada', 600),
+        image: MEDIA('1779816261985-ajswl120gk7.jpg'),
         fallbackImage: '/images/category-statues.svg',
         href: '#',
         accent: 'gold',
@@ -66,7 +79,7 @@ export const defaultContent = {
         title: 'Cultural Handicrafts',
         description:
           "Decorative bowls, singing bowls, bells, and ceremonial items that celebrate Nepal's cultural and spiritual heritage.",
-        image: U('1610375461246-83df859d849d', 600),
+        image: MEDIA('1779816431229-ol7opm85a7a.jpg'),
         fallbackImage: '/images/category-crafts.svg',
         href: '#',
         accent: 'silver',
@@ -84,36 +97,32 @@ export const defaultContent = {
         name: 'Traditional Gold Pendant',
         description:
           'Hand-carved pendant inspired by traditional Nepali motifs. 22K gold, made to order.',
-        image: U('1611107683227-e9060eccd846', 500),
+        image: MEDIA('1780145401984-7zwhmmkylmw.png'),
         price: 'Price on request',
-        showRequestPrice: true,
       },
       {
         id: 'prod-2',
         name: 'Silver Singing Bowl',
         description:
           'Hand-hammered Tibetan-style singing bowl. Perfect for meditation and sound healing.',
-        image: U('1506126613408-eca07ce68773', 500),
+        image: MEDIA('1779612068012-ror8vtrbk5j.png'),
         price: 'Price on request',
-        showRequestPrice: true,
       },
       {
         id: 'prod-3',
         name: 'Buddha Statue — Bronze & Gold',
         description:
           'Sacred Buddha figure with gold leaf detailing. Cast using lost-wax technique.',
-        image: U('1548013146-72479768bada', 500),
+        image: MEDIA('1779612073493-u0jlhseo6c.png'),
         price: 'Price on request',
-        showRequestPrice: true,
       },
       {
         id: 'prod-4',
         name: 'Filigree Silver Earrings',
         description:
           'Delicate silver filigree earrings, a signature style of Nepali silversmiths.',
-        image: U('1605100804763-247f67b3557e', 500),
+        image: MEDIA('1779612090661-u0do90fi0bd.png'),
         price: 'Price on request',
-        showRequestPrice: true,
       },
     ],
   },
@@ -156,57 +165,52 @@ export const defaultContent = {
       },
     ],
   },
+  gallery: {
+    overline: 'Moments & New Arrivals',
+    title: 'Gallery',
+    subtitle: 'Events, life in our workshop, and our newest handcrafted pieces.',
+    // Photos are uploaded in Admin → Gallery. The section is hidden while this list is empty.
+    items: [],
+  },
   testimonials: {
     overline: 'What Our Customers Say',
     title: 'Testimonials',
     subtitle:
       'Reviews from local and international customers who cherish our handcrafted pieces.',
-    items: [
-      {
-        id: 'test-1',
-        quote:
-          'The Buddha statue we ordered is breathtaking. The craftsmanship and attention to detail exceeded our expectations. A true piece of art.',
-        author: 'Sarah M.',
-        location: 'London, UK',
-        rating: 5,
-      },
-      {
-        id: 'test-2',
-        quote:
-          'I have been buying silver jewelry from Mount Everest for years. Each piece tells a story. The custom earrings they made for my wedding were perfect.',
-        author: 'Priya K.',
-        location: 'Kathmandu, Nepal',
-        rating: 5,
-      },
-      {
-        id: 'test-3',
-        quote:
-          'Outstanding quality and service. The singing bowl arrived beautifully packaged and sounds incredible. Will definitely order again.',
-        author: 'James L.',
-        location: 'California, USA',
-        rating: 5,
-      },
-    ],
+    // Reviews themselves come from customers via the review form (Admin → Reviews approves them).
+    cta: 'Share Your Experience',
+    emptyText: 'Bought one of our handcrafted pieces? Be the first to share your experience.',
   },
   contact: {
     overline: 'Get in Touch',
     title: 'Contact & Visit',
     subtitle:
       'Reach out for inquiries, custom orders, or to visit our workshop in Kathmandu.',
-    phone: '+977 1 4XXXXXX',
-    email: 'hello@mteveresthandicraft.com',
+    phones: [
+      { id: 'phone-1', label: 'Mobile', number: '+977 9851448533' },
+      { id: 'phone-2', label: '', number: '' },
+      { id: 'phone-3', label: '', number: '' },
+    ],
+    email: 'Karna.bdr.bishwakarma@gmail.com',
     address: 'Kathmandu, Nepal',
-    whatsapp: 'https://wa.me/9771XXXXXXXX',
-    mapPlaceholder: 'Map placeholder — Kathmandu, Nepal',
+    whatsappLabel: 'Contact on WhatsApp',
+    viberLabel: 'Chat on Viber',
+    // Location for the embedded map (address, plus code or "lat,lng") and the share link for "Get Directions".
+    mapLocation: 'P855+GXG Bagemuda, चन्द्रमान सिंह मार्ग, Kathmandu, Bagmati Province 44600',
+    mapLink: 'https://maps.app.goo.gl/sq7JTR6tygorkou16',
+    mapTitle: 'Visit Our Workshop',
+    directionsLabel: 'Get Directions',
   },
+  social: emptySocial(),
   footer: {
     brandName: 'Mount Everest',
     brandAccent: 'Gold & Silver',
     description:
       'Handcrafted gold and silver jewelry, religious statues, and cultural metal crafts from Kathmandu, Nepal.',
     tagline: 'Handmade in Nepal 🇳🇵',
-    facebook: '#',
-    instagram: '#',
+    quickLinksTitle: 'Quick Links',
+    socialTitle: 'Follow Us',
+    contactTitle: 'Contact',
     copyright: 'Mount Everest Gold Silver Handicraft',
   },
 }

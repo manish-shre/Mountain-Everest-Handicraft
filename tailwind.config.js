@@ -10,6 +10,8 @@ export default {
         gold: '#C9A227',
         'gold-light': '#E5D4A1',
         'gold-dark': '#A68521',
+        // Readable gold for text on white/cream backgrounds (WCAG AA contrast ≥ 4.5:1).
+        'gold-deep': '#7E600C',
         silver: '#A8A9AD',
         'silver-light': '#E8E8EA',
         navy: '#1B2838',

@@ -1,6 +1,8 @@
 -- Mount Everest Handicraft — Supabase CMS schema
 -- Run once in: https://supabase.com/dashboard/project/ewwzzsbaicqbaadxfgkx/sql/new
 -- Safe to re-run: drops policies first, then recreates them.
+-- Then run contact_messages.sql to enable the contact form inbox (Admin → Messages),
+-- and reviews.sql to enable customer reviews (Admin → Reviews, shown in Testimonials).
 
 -- ---------------------------------------------------------------------------
 -- Tables
